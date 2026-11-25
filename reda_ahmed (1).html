@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REDA AHMED | Wedding Photography &amp; High-End Color Grading</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo, Amiri & Cormorant Garamond -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        // Configure Tailwind theme tokens for dark & light editorial palettes
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        serif: ['Amiri', 'serif'],
+                        en: ['"Cormorant Garamond"', 'serif'],
+                    },
+                    colors: {
+                        gold: {
+                            300: '#e6cf9c',
+                            400: '#d8bc84',
+                            500: '#c9a86a',
+                            600: '#a88749',
+                        },
+                        obsidian: {
+                            950: '#09090b',
+                            900: '#0e0e11',
+                            850: '#151519',
+                            800: '#1d1d22',
+                        },
+                        ivory: {
+                            50: '#fbfaf7',
+                            100: '#f5f2eb',
+                            200: '#eae4d7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+        /* Responsive editorial masonry layout inside session gallery */
+        .session-masonry {
+            column-count: 1;
+            column-gap: 1.25rem;
+        }
+        @media (min-width: 640px) {
+            .session-masonry {
+                column-count: 2;
+            }
+        }
+        @media (min-width: 1024px) {
+            .session-masonry {
+                column-count: 3;
+            }
+        }
+        .session-masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.25rem;
+        }
+        /* Interactive Before / After comparison container */
+        .ba-container {
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            touch-action: pan-y;
+        }
+        .ba-after-wrapper {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .ba-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2.5px;
+            background: #c9a86a;
+            cursor: ew-resize;
+            z-index: 20;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.75);
+        }
+        .ba-handle-knob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 9999px;
+            background: #09090b;
+            border: 2px solid #c9a86a;
+            color: #d8bc84;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.65);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .ba-handle:hover .ba-handle-knob {
+            transform: translate(-50%, -50%) scale(1.08);
+            background: #151519;
+        }
+        /* Subtle RAW simulation for preloaded demo before/after comparisons */
+        .demo-raw-state {
+            filter: saturate(0.55) contrast(0.84) brightness(1.05) sepia(0.06);
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e0e11;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2e2e36;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c9a86a;
+        }
+    </style>
+</head>
+<body class="bg-ivory-50 text-stone-900 dark:bg-obsidian-900 dark:text-ivory-100 antialiased selection:bg-gold-500 selection:text-obsidian-950">
+
+    <!-- Toast Notifications (Non-blocking feedback) -->
+    <div id="toast-stack" class="fixed bottom-6 left-6 z-[120] flex flex-col gap-2.5 pointer-events-none max-w-sm"></div>
+
+    <!-- Top Studio Control Bar -->
+    <div id="studio-toolbar" class="sticky top-0 z-50 bg-obsidian-950/95 backdrop-blur-md border-b border-gold-500/30 text-ivory-100 px-4 py-2.5 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gold-500/15 text-gold-400 border border-gold-500/35">
+                    <span class="w-2 h-2 rounded-full bg-gold-400"></span>
+                    <span class="font-en tracking-wider uppercase">REDA AHMED STUDIO</span>
+                </span>
+                <p class="text-xs text-stone-300 hidden lg:block">
+                    أدر السيشنات، ارفع الصور، خصّص الهوية، وصدّر نسخة <span class="font-en text-gold-400">index.html</span> مستقلة للعملاء.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="toggle-admin-btn" onclick="toggleAdminDrawer()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-gold-500 hover:bg-gold-400 text-obsidian-950 transition shadow cursor-pointer">
+                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                    <span>إدارة السيشنات والتخصيص</span>
+                </button>
+
+                <button onclick="toggleTheme()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-obsidian-850 hover:bg-obsidian-800 text-ivory-100 border border-white/10 transition cursor-pointer">
+                    <i id="theme-icon" data-lucide="sun" class="w-4 h-4 text-gold-400"></i>
+                    <span id="theme-label" class="hidden sm:inline">إضاءة نهارية</span>
+                </button>
+
+                <button onclick="exportStandaloneHTML()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 transition cursor-pointer">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>تصدير index.html</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collapsible Admin & Session Management Drawer -->
+    <div id="admin-drawer" class="hidden bg-obsidian-850 text-ivory-100 border-b border-gold-500/40 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-white/10">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gold-400 flex items-center gap-2">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                        لوحة إدارة السيشنات، الصور، وهوية REDA AHMED
+                    </h2>
+                    <p class="text-xs text-stone-400 mt-0.5">
+                        يتم ضغط الصور محلياً بدقة عالية لتسريع التصفح وسهولة تصدير ملف <span class="font-en">index.html</span> الكامل.
+                    </p>
+                </div>
+                <button onclick="toggleAdminDrawer()" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-stone-300 transition cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Column 1: Brand, Cover & Client Message -->
+                <div class="lg:col-span-5 space-y-4 bg-obsidian-900/90 p-5 rounded-2xl border border-white/10">
+                    <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        الهوية، الغلاف الرئيسي، ورسالة العملاء
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs text-stone-300 mb-1">الاسم / العلامة التجارية</label>
+                        <input type="text" id="input-brand" oninput="syncBrandState()" class="w-full px-3 py-2 rounded-lg bg-obsidian-850 border border-white/15 text-sm text-ivory-100 focus:outline-none focus:border-gold-500" dir="ltr">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-stone-300 mb-1">العنوان الفرعي / التخصص</label>
+                        <input type="text" id="input-tagline" oninput="syncBrandState()" class="w-full px-3 py-2 rounded-lg bg-obsidian-850 border border-white/15 text-sm text-ivory-100 focus:outline-none focus:border-gold-500" dir="ltr">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-stone-300 mb-1">رقم الواتساب (بكود الدولة بدون أصفار بادئة إضافية)</label>
+                        <input type="text" id="input-whatsapp" oninput="syncBrandState()" class="w-full px-3 py-2 rounded-lg bg-obsidian-850 border border-white/15 text-sm text-ivory-100 focus:outline-none focus:border-gold-500" dir="ltr">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-stone-300 mb-1">رسالة العملاء الجادين والمصورين</label>
+                        <textarea id="input-client-message" rows="3" oninput="syncBrandState()" class="w-full px-3 py-2 rounded-lg bg-obsidian-850 border border-white/15 text-xs text-ivory-100 focus:outline-none focus:border-gold-500"></textarea>
+                    </div>
+
+                    <div class="pt-1 flex items-center justify-between gap-3">
+                        <label class="flex-1 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-obsidian-800 hover:bg-obsidian-800/80 border border-dashed border-gold-500/50 text-xs font-semibold text-gold-300 cursor-pointer transition">
+                            <i data-lucide="image" class="w-4 h-4"></i>
+                            <span>تغيير صورة الغلاف (Hero Cover)</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="handleHeroCoverUpload(event)">
+                        </label>
+                        <button onclick="resetToDefaultDemos()" class="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-medium border border-white/10 transition cursor-pointer">
+                            استعادة الافتراضي
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Column 2: Create New Session & Add Photos to Existing Session -->
+                <div class="lg:col-span-4 space-y-4 bg-obsidian-900/90 p-5 rounded-2xl border border-white/10">
+                    <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                        <i data-lucide="images" class="w-4 h-4"></i>
+                        إنشاء سيشن جديد أو إضافة صور لسيشن قائم
+                    </h3>
+
+                    <div class="p-3.5 rounded-xl bg-obsidian-850/80 border border-white/10 space-y-3">
+                        <div class="text-xs font-bold text-ivory-100">1. إنشاء سيشن جديد</div>
+                        <input type="text" id="new-session-title" placeholder="اسم السيشن (مثال: حفل زفاف كريم وسلمى)" class="w-full px-3 py-2 rounded-lg bg-obsidian-900 border border-white/15 text-xs text-ivory-100 focus:outline-none focus:border-gold-500">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <select id="new-session-category" class="px-2.5 py-2 rounded-lg bg-obsidian-900 border border-white/15 text-xs text-ivory-100 focus:outline-none focus:border-gold-500">
+                                <option value="weddings">قصص الأفراح</option>
+                                <option value="night">تصوير ليلي وإضاءة</option>
+                                <option value="portraits">بورتريه وتفاصيل</option>
+                            </select>
+                            <input type="text" id="new-session-note" placeholder="وصف مختصر (اختياري)" class="px-2.5 py-2 rounded-lg bg-obsidian-900 border border-white/15 text-xs text-ivory-100 focus:outline-none focus:border-gold-500">
+                        </div>
+                        <label class="w-full flex flex-col items-center justify-center px-3 py-2.5 rounded-lg bg-gold-500/15 hover:bg-gold-500/25 border border-dashed border-gold-500 text-gold-300 text-xs font-bold cursor-pointer transition text-center">
+                            <span id="new-session-files-label">اختر صور السيشن (أول صورة هي الغلاف)</span>
+                            <input type="file" id="new-session-files" accept="image/*" multiple class="hidden" onchange="updateNewSessionFileLabel(event)">
+                        </label>
+                        <button onclick="createSessionFromInputs()" class="w-full py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-bold text-xs transition cursor-pointer">
+                            + نشر السيشن الجديد
+                        </button>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-obsidian-850/80 border border-white/10 space-y-3">
+                        <div class="text-xs font-bold text-ivory-100">2. إضافة صور إضافية لسيشن موجود</div>
+                        <select id="append-session-select" class="w-full px-3 py-2 rounded-lg bg-obsidian-900 border border-white/15 text-xs text-ivory-100 focus:outline-none focus:border-gold-500"></select>
+                        <label class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-obsidian-900 hover:bg-obsidian-950 border border-dashed border-white/20 text-xs text-stone-200 cursor-pointer transition">
+                            <i data-lucide="plus" class="w-4 h-4 text-gold-400"></i>
+                            <span>اختر صوراً لإضافتها للسيشن المحدد</span>
+                            <input type="file" accept="image/*" multiple class="hidden" onchange="appendPhotosToSelectedSession(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Column 3: Existing Sessions List & Before/After Uploader -->
+                <div class="lg:col-span-3 space-y-4 bg-obsidian-900/90 p-5 rounded-2xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2 mb-3">
+                            <i data-lucide="layers" class="w-4 h-4"></i>
+                            السيشنات الحالية
+                        </h3>
+                        <div id="admin-sessions-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10 space-y-2.5">
+                        <h4 class="text-xs font-bold text-gold-400 flex items-center gap-1.5">
+                            <i data-lucide="split-square-horizontal" class="w-4 h-4"></i>
+                            إضافة مقارنة قبل وبعد (Before / After)
+                        </h4>
+                        <input type="text" id="ba-title" placeholder="عنوان المقارنة (مثال: تصحيح إضاءة ليلية)" class="w-full px-2.5 py-1.5 rounded-lg bg-obsidian-850 border border-white/15 text-xs text-ivory-100 focus:outline-none focus:border-gold-500">
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="px-2 py-1.5 rounded-lg bg-obsidian-850 border border-white/15 text-[11px] text-center cursor-pointer hover:border-gold-500 truncate">
+                                <span id="ba-before-label">صورة قبل (RAW)</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="stageBaBefore(event)">
+                            </label>
+                            <label class="px-2 py-1.5 rounded-lg bg-obsidian-850 border border-white/15 text-[11px] text-center cursor-pointer hover:border-gold-500 truncate">
+                                <span id="ba-after-label">صورة بعد (Final)</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="stageBaAfter(event)">
+                            </label>
+                        </div>
+                        <button onclick="addBeforeAfterComparison()" class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/15 text-ivory-100 border border-white/15 font-semibold text-xs transition cursor-pointer">
+                            إضافة المقارنة للمعرض
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header id="main-header" class="sticky top-[49px] z-40 bg-ivory-50/90 dark:bg-obsidian-900/90 backdrop-blur-md border-b border-stone-200/80 dark:border-white/10 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="#" class="flex flex-col">
+                <span id="header-brand" class="font-en text-2xl sm:text-3xl font-bold tracking-[0.12em] uppercase text-stone-900 dark:text-ivory-100">
+                    REDA AHMED
+                </span>
+                <span id="header-tagline" class="font-en text-[11px] sm:text-xs tracking-[0.22em] uppercase text-gold-600 dark:text-gold-400">
+                    Wedding Photography &amp; High-End Color Grading
+                </span>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="#sessions" class="hover:text-gold-600 dark:hover:text-gold-400 transition">السيشنات والألبومات</a>
+                <a href="#before-after" class="hover:text-gold-600 dark:hover:text-gold-400 transition">قبل وبعد التعديل</a>
+                <a href="#about-craft" class="hover:text-gold-600 dark:hover:text-gold-400 transition">المنهج والجودة</a>
+                <a href="#contact" class="px-5 py-2.5 rounded-full bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-bold transition shadow-sm">
+                    تواصل وحجز
+                </a>
+            </nav>
+
+            <button onclick="toggleMobileNav()" class="md:hidden p-2.5 rounded-xl border border-stone-300 dark:border-white/15 text-stone-800 dark:text-ivory-100 cursor-pointer">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div id="mobile-nav" class="hidden md:hidden bg-ivory-50 dark:bg-obsidian-900 border-b border-stone-200 dark:border-white/10 px-6 py-4 space-y-3">
+            <a href="#sessions" onclick="toggleMobileNav()" class="block py-2 text-sm font-medium hover:text-gold-500">السيشنات والألبومات</a>
+            <a href="#before-after" onclick="toggleMobileNav()" class="block py-2 text-sm font-medium hover:text-gold-500">قبل وبعد التعديل</a>
+            <a href="#about-craft" onclick="toggleMobileNav()" class="block py-2 text-sm font-medium hover:text-gold-500">المنهج والجودة</a>
+            <a href="#contact" onclick="toggleMobileNav()" class="block w-full text-center py-3 rounded-xl bg-gold-500 text-obsidian-950 font-bold text-sm">تواصل وحجز</a>
+        </div>
+    </header>
+
+    <!-- 1. Editorial Hero Section -->
+    <section class="relative min-h-[86vh] flex items-center overflow-hidden bg-obsidian-950">
+        <img id="hero-bg-img"
+             src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=85"
+             onerror="this.src='https://placehold.co/1920x1080/151519/c9a86a?text=REDA+AHMED+WEDDING+PHOTOGRAPHY'"
+             alt="REDA AHMED Editorial Wedding Cover"
+             class="absolute inset-0 w-full h-full object-cover object-center opacity-55">
+
+        <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/60 to-obsidian-950/35"></div>
+        <div class="absolute inset-0 bg-gradient-to-l from-obsidian-950/90 via-obsidian-950/45 to-transparent"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-gold-500/40 text-gold-300 text-xs font-semibold mb-6">
+                    <i data-lucide="camera" class="w-3.5 h-3.5 text-gold-400"></i>
+                    <span class="font-en tracking-[0.18em] uppercase">REDA AHMED • EDITORIAL WEDDING &amp; COLOR GRADING</span>
+                </div>
+
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-ivory-100 leading-tight mb-6">
+                    حكايات زفاف خالدة بإضاءة مدروسة وألوان سينمائية متماسكة
+                </h1>
+
+                <p class="text-base sm:text-lg text-ivory-200/90 leading-relaxed mb-8 max-w-2xl font-light">
+                    يقدم <span class="font-en font-semibold text-gold-300">REDA AHMED</span> تجربة متكاملة في تصوير الأفراح وتوحيد الألوان والمعالجة الاحترافية (<span class="font-en text-gold-300">High-End Color Grading &amp; Natural Retouching</span>) للعرسان والمصورين والاستوديوهات الباحثة عن إتقان لا يقبل المساومة.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-4 mb-12">
+                    <a href="#sessions" class="px-7 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-bold text-sm sm:text-base transition shadow-lg shadow-gold-500/20 inline-flex items-center gap-2">
+                        <span>تصفح السيشنات والألبومات</span>
+                        <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#before-after" class="px-7 py-4 rounded-xl bg-white/10 hover:bg-white/15 backdrop-blur-md text-ivory-100 border border-white/20 font-semibold text-sm sm:text-base transition inline-flex items-center gap-2">
+                        <i data-lucide="split-square-horizontal" class="w-5 h-5 text-gold-400"></i>
+                        <span>شاهد قبل وبعد التعديل</span>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-8 border-t border-white/15 max-w-xl">
+                    <div>
+                        <div class="text-gold-400 font-bold text-lg sm:text-xl">سيشنات متكاملة</div>
+                        <div class="text-xs sm:text-sm text-ivory-200/75">سرد بصري لكل قصة زفاف</div>
+                    </div>
+                    <div>
+                        <div class="font-en text-gold-400 font-bold text-lg sm:text-xl">Color &amp; Skin</div>
+                        <div class="text-xs sm:text-sm text-ivory-200/75">تدرجات لونية دقيقة وملمس طبيعي</div>
+                    </div>
+                    <div>
+                        <div class="text-gold-400 font-bold text-lg sm:text-xl">التزام بالمواعيد</div>
+                        <div class="text-xs sm:text-sm text-ivory-200/75">تسليم منظم وموثوق</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Separate Sessions / Albums Section -->
+    <section id="sessions" class="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-6">
+            <div>
+                <span class="font-en text-xs font-semibold tracking-[0.25em] uppercase text-gold-600 dark:text-gold-400 block mb-2">
+                    CURATED SESSIONS &amp; ALBUMS
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-stone-900 dark:text-ivory-100">
+                    السيشنات والألبومات المنفصلة
+                </h2>
+                <p class="text-sm sm:text-base text-stone-600 dark:text-stone-400 mt-2 max-w-2xl">
+                    كل بطاقة تمثل سيشناً مستقلاً بصورة غلافه وعدد صوره. اضغط على أي سيشن لفتح معرضه الكامل واستعراض جميع لقطاته بحرية.
+                </p>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="flex flex-wrap items-center gap-2 bg-stone-200/70 dark:bg-obsidian-850 p-1.5 rounded-xl border border-stone-300/60 dark:border-white/10">
+                <button onclick="setSessionFilter('all')" data-filter="all" class="session-filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-gold-500 text-obsidian-950 transition cursor-pointer">
+                    الكل (<span id="sessions-total-count">0</span>)
+                </button>
+                <button onclick="setSessionFilter('weddings')" data-filter="weddings" class="session-filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-stone-700 dark:text-stone-300 hover:text-gold-500 transition cursor-pointer">
+                    قصص الأفراح
+                </button>
+                <button onclick="setSessionFilter('night')" data-filter="night" class="session-filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-stone-700 dark:text-stone-300 hover:text-gold-500 transition cursor-pointer">
+                    تصوير ليلي وإضاءة
+                </button>
+                <button onclick="setSessionFilter('portraits')" data-filter="portraits" class="session-filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-stone-700 dark:text-stone-300 hover:text-gold-500 transition cursor-pointer">
+                    بورتريه وتفاصيل
+                </button>
+            </div>
+        </div>
+
+        <!-- Sessions Cards Grid -->
+        <div id="sessions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+
+        <!-- Quick Session Creation Bar -->
+        <div class="mt-12 p-5 rounded-2xl bg-stone-100 dark:bg-obsidian-850 border border-dashed border-gold-500/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 text-center sm:text-right">
+                <div class="w-11 h-11 rounded-xl bg-gold-500/15 text-gold-500 flex items-center justify-center shrink-0">
+                    <i data-lucide="folder-plus" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-stone-900 dark:text-ivory-100">هل لديك سيشن جديد أو صور إضافية لسيشن حالي؟</h4>
+                    <p class="text-xs text-stone-600 dark:text-stone-400">افتح لوحة الإدارة لإنشاء سيشن منفصل أو إلحاق صور جديدة بأي سيشن.</p>
+                </div>
+            </div>
+            <button onclick="openAdminDrawerSmooth()" class="px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-bold text-xs sm:text-sm transition shrink-0 cursor-pointer">
+                + إدارة وإضافة السيشنات
+            </button>
+        </div>
+    </section>
+
+    <!-- 3. Interactive Before / After Retouching & Color Grading Section -->
+    <section id="before-after" class="py-20 sm:py-28 bg-stone-100/80 dark:bg-obsidian-850 border-y border-stone-200 dark:border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mb-14">
+                <span class="font-en text-xs font-semibold tracking-[0.25em] uppercase text-gold-600 dark:text-gold-400 block mb-2">
+                    BEFORE &amp; AFTER • COLOR GRADING &amp; RETOUCHING
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-stone-900 dark:text-ivory-100 mb-4">
+                    مقارنة قبل وبعد التعديل
+                </h2>
+                <p class="text-sm sm:text-base text-stone-600 dark:text-stone-400 leading-relaxed">
+                    اسحب المقبض بالماوس أو اللمس لمقارنة اللقطة الخام (<span class="font-en font-semibold">RAW</span>) بالمعالجة النهائية (<span class="font-en font-semibold">Color Graded</span>) مع الحفاظ على ملمس البشرة الطبيعي وتفاصيل الإضاءة الليلية.
+                </p>
+            </div>
+
+            <div id="ba-comparisons-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
+        </div>
+    </section>
+
+    <!-- 4. Dual Audience Craft Section (Clients & Photographers/Studios) -->
+    <section id="about-craft" class="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="p-8 sm:p-10 rounded-3xl bg-white dark:bg-obsidian-850 border border-stone-200 dark:border-white/10 shadow-xl flex flex-col justify-between">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/15 text-gold-600 dark:text-gold-400 text-xs font-bold mb-5">
+                        <i data-lucide="heart" class="w-3.5 h-3.5"></i>
+                        <span>للعرسان وأصحاب المناسبات</span>
+                    </span>
+                    <h3 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-ivory-100 mb-4">
+                        توثيق راقٍ يحفظ إحساس اليوم بكل تفاصيله
+                    </h3>
+                    <p class="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed mb-6">
+                        نعمل بعدد محدود من الحجوزات لضمان الاهتمام الكامل بكل لقطة، بدءاً من قراءة الإضاءة وتوجيه الحركة بسلاسة وحتى تسليم ألبوم متجانس الألوان ومُعالَج بعناية فائقة.
+                    </p>
+                </div>
+                <button onclick="prefillInquiry('تغطية تصوير زفاف متكاملة (Wedding Session)')" class="w-full py-3.5 rounded-xl bg-stone-900 dark:bg-ivory-100 text-ivory-100 dark:text-obsidian-950 font-bold text-sm hover:opacity-90 transition cursor-pointer">
+                    احجز أو استفسر عن موعد زفافك
+                </button>
+            </div>
+
+            <div class="p-8 sm:p-10 rounded-3xl bg-white dark:bg-obsidian-850 border border-gold-500/40 shadow-xl flex flex-col justify-between">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/20 text-gold-600 dark:text-gold-400 text-xs font-bold mb-5 font-en">
+                        <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                        <span>FOR PHOTOGRAPHERS &amp; STUDIOS</span>
+                    </span>
+                    <h3 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-ivory-100 mb-4">
+                        شريك احترافي في توحيد الألوان والريتاتش
+                    </h3>
+                    <p class="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed mb-6">
+                        ندعم المصورين والاستوديوهات بتوحيد ألوان السيشنات الكاملة (<span class="font-en">Batch Color Grading</span>)، موازنة درجات البشرة في الإضاءات الصعبة، وتنقية الصور مع الحفاظ الكامل على هوية الاستوديو ومواعيد التسليم.
+                    </p>
+                </div>
+                <button onclick="prefillInquiry('تعاون تعديل وتلوين صور للمصورين والاستوديوهات (Color Grading & Retouching)')" class="w-full py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-bold text-sm transition cursor-pointer">
+                    ابدأ تعاوناً احترافياً في التعديل والتلوين
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Serious Client Message & Direct Contact Section -->
+    <section id="contact" class="py-20 sm:py-28 bg-obsidian-950 text-ivory-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-6 space-y-6">
+                    <span class="inline-block px-3.5 py-1 rounded-full bg-gold-500/20 text-gold-400 text-xs font-bold tracking-wider">
+                        التزام، وضوح، وجودة عالية
+                    </span>
+                    <h2 class="font-serif text-3xl sm:text-5xl font-bold leading-tight text-ivory-100">
+                        نبني الثقة بالنتائج والالتزام في كل تسليم.
+                    </h2>
+                    <p id="display-client-message" class="text-base sm:text-lg text-ivory-200/90 leading-relaxed font-light">
+                        نعمل بوضوح واحترافية عالية مع العرسان والمصورين والاستوديوهات الجادة؛ نركز على تناسق الألوان، دقة المعالجة، والالتزام التام بالمواعيد المتفق عليها لتخرج كل صورة بأعلى قيمة بصرية.
+                    </p>
+
+                    <div class="pt-2 flex flex-wrap items-center gap-4">
+                        <a id="direct-whatsapp-btn" href="https://wa.me/201000000000" target="_blank" rel="noopener" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition shadow-lg">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i>
+                            <span>تواصل عبر واتساب مع REDA AHMED</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 bg-obsidian-900 p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl">
+                    <h3 class="text-xl font-bold text-ivory-100 mb-1.5">أرسل تفاصيل طلبك مباشرة</h3>
+                    <p class="text-xs text-stone-400 mb-6">سيتم تجهيز رسالتك وتوجيهها مباشرة إلى واتساب.</p>
+
+                    <form onsubmit="sendSeriousInquiry(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-medium text-stone-300 mb-1.5">الاسم أو اسم الاستوديو</label>
+                            <input type="text" id="inq-name" required placeholder="مثال: كريم حسن / استوديو ضوء" class="w-full px-4 py-3 rounded-xl bg-obsidian-850 border border-white/15 text-ivory-100 text-sm focus:outline-none focus:border-gold-500">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-stone-300 mb-1.5">نوع الخدمة</label>
+                                <select id="inq-service" class="w-full px-4 py-3 rounded-xl bg-obsidian-850 border border-white/15 text-ivory-100 text-sm focus:outline-none focus:border-gold-500">
+                                    <option value="تغطية تصوير زفاف متكاملة (Wedding Session)">تصوير زفاف / سيشن خاص</option>
+                                    <option value="تعاون تعديل وتلوين صور للمصورين والاستوديوهات (Color Grading & Retouching)">معالجة وتلوين صور (مصورين/استوديوهات)</option>
+                                    <option value="استفسار عن الباقات والمواعيد">استفسار عن المواعيد والباقات</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-stone-300 mb-1.5">التاريخ أو موعد التسليم المطلوب</label>
+                                <input type="date" id="inq-date" class="w-full px-4 py-3 rounded-xl bg-obsidian-850 border border-white/15 text-ivory-100 text-sm focus:outline-none focus:border-gold-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-stone-300 mb-1.5">تفاصيل المشروع أو السيشن</label>
+                            <textarea id="inq-details" rows="3" required placeholder="اكتب تفاصيل المناسبة أو عدد الصور ونوع المعالجة المطلوبة..." class="w-full px-4 py-3 rounded-xl bg-obsidian-850 border border-white/15 text-ivory-100 text-sm focus:outline-none focus:border-gold-500"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-bold text-sm sm:text-base transition shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>إرسال الرسالة عبر واتساب</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-obsidian-950 border-t border-white/10 text-xs text-stone-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© <span id="footer-year"></span> <span id="footer-brand" class="font-en font-semibold text-stone-300">REDA AHMED</span> — جميع الحقوق محفوظة.</p>
+            <p id="footer-tagline" class="font-en">Wedding Photography &amp; High-End Color Grading</p>
+        </div>
+    </footer>
+
+    <!-- Full Session Gallery Modal (Opens when clicking a Session Card) -->
+    <div id="session-modal" class="fixed inset-0 z-[80] hidden bg-obsidian-950/95 backdrop-blur-lg overflow-y-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="sticky top-0 z-20 bg-obsidian-950/90 backdrop-blur-md py-4 mb-8 border-b border-white/10 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <span id="modal-session-badge" class="inline-block px-3 py-1 rounded-full bg-gold-500/20 text-gold-400 text-xs font-bold mb-1"></span>
+                    <h3 id="modal-session-title" class="font-serif text-2xl sm:text-4xl font-bold text-ivory-100"></h3>
+                    <p id="modal-session-subtitle" class="text-xs sm:text-sm text-stone-400 mt-1"></p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gold-500/15 hover:bg-gold-500/25 text-gold-300 border border-gold-500/40 text-xs sm:text-sm font-bold cursor-pointer transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>إضافة صور للسيشن</span>
+                        <input type="file" accept="image/*" multiple class="hidden" onchange="appendPhotosToOpenSession(event)">
+                    </label>
+                    <button onclick="closeSessionModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-ivory-100 text-xs sm:text-sm font-bold transition cursor-pointer">
+                        <span>إغلاق</span>
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="modal-session-masonry" class="session-masonry"></div>
+        </div>
+    </div>
+
+    <!-- Zoomable Lightbox Modal for Viewing Individual Session Photos -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[100] hidden bg-obsidian-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-4">
+        <div class="absolute top-5 left-5 right-5 flex items-center justify-between z-20">
+            <div class="flex items-center gap-2">
+                <button onclick="toggleLightboxZoom()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-ivory-100 text-xs font-bold inline-flex items-center gap-1.5 transition cursor-pointer">
+                    <i id="zoom-icon" data-lucide="zoom-in" class="w-4 h-4 text-gold-400"></i>
+                    <span id="zoom-label">تكبير الصورة</span>
+                </button>
+                <span id="lightbox-counter" class="px-3 py-2 rounded-xl bg-white/5 text-stone-300 text-xs font-en"></span>
+            </div>
+
+            <button onclick="closeLightbox()" class="p-3 rounded-full bg-white/10 hover:bg-white/20 text-ivory-100 transition cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <button onclick="stepLightbox(-1)" class="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-gold-500 hover:text-obsidian-950 text-ivory-100 transition z-20 cursor-pointer">
+            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+        </button>
+
+        <button onclick="stepLightbox(1)" class="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-gold-500 hover:text-obsidian-950 text-ivory-100 transition z-20 cursor-pointer">
+            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+        </button>
+
+        <div id="lightbox-stage" class="max-w-6xl max-h-[82vh] overflow-auto flex flex-col items-center justify-center rounded-2xl">
+            <img id="lightbox-photo" src="" alt="Session Photo" onclick="toggleLightboxZoom()" class="max-h-[75vh] w-auto object-contain rounded-xl shadow-2xl border border-white/10 transition-transform duration-300 cursor-zoom-in">
+            <p id="lightbox-caption" class="mt-3 text-xs sm:text-sm text-ivory-200/85 font-en text-center"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        const CATEGORY_LABELS = {
+            weddings: 'قصص الأفراح',
+            night: 'تصوير ليلي وإضاءة',
+            portraits: 'بورتريه وتفاصيل'
+        };
+
+        // Default portfolio state branded for REDA AHMED
+        function getDefaultState() {
+            return {
+                brandName: 'REDA AHMED',
+                tagline: 'Wedding Photography & High-End Color Grading',
+                whatsapp: '201000000000',
+                clientMessage: 'نعمل بوضوح واحترافية عالية مع العرسان والمصورين والاستوديوهات الجادة؛ نركز على تناسق الألوان، دقة المعالجة، والالتزام التام بالمواعيد المتفق عليها لتخرج كل صورة بأعلى قيمة بصرية.',
+                heroCover: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=85',
+                sessions: [
+                    {
+                        id: 101,
+                        title: 'سيشن زفاف نهار ذهبي — سارة وعمر',
+                        category: 'weddings',
+                        note: 'Warm Natural Light • Balanced Skin Tones & Rich Depth',
+                        coverIndex: 0,
+                        photos: [
+                            'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1400&q=85'
+                        ]
+                    },
+                    {
+                        id: 102,
+                        title: 'سيشن إضاءة ليلية وتباين سينمائي',
+                        category: 'night',
+                        note: 'Controlled Flash & Ambient Balance • Deep Shadows',
+                        coverIndex: 0,
+                        photos: [
+                            'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1400&q=85'
+                        ]
+                    },
+                    {
+                        id: 103,
+                        title: 'بورتريه وتفاصيل اللحظات الهادئة',
+                        category: 'portraits',
+                        note: 'Editorial Framing • Clean Skin Retouching & True Whites',
+                        coverIndex: 0,
+                        photos: [
+                            'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=85',
+                            'https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1400&q=85'
+                        ]
+                    }
+                ],
+                comparisons: [
+                    {
+                        id: 201,
+                        title: 'توحيد الألوان وإبراز الإضاءة الدافئة (Wedding Color Grade)',
+                        subtitle: 'موازنة الهايلايت والظلال مع الحفاظ على درجات بشرة طبيعية وواضحة.',
+                        beforeSrc: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1400&q=85',
+                        afterSrc: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1400&q=85',
+                        isDemoRaw: true
+                    },
+                    {
+                        id: 202,
+                        title: 'معالجة البورتريه والإضاءة الليلية (Night & Skin Retouch)',
+                        subtitle: 'تنقية دقيقة للبشرة وتنسيق حرارة الإضاءة دون طمس التفاصيل الدقيقة.',
+                        beforeSrc: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1400&q=85',
+                        afterSrc: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1400&q=85',
+                        isDemoRaw: true
+                    }
+                ]
+            };
+        }
+
+        let portfolioState = getDefaultState();
+        let activeSessionFilter = 'all';
+        let currentOpenSessionId = null;
+        let currentLightboxPhotoIdx = 0;
+        let isLightboxZoomed = false;
+        let stagedBaBeforeUrl = null;
+        let stagedBaAfterUrl = null;
+
+        // Show clean toast notification
+        function showToast(msg, isError = false) {
+            const stack = document.getElementById('toast-stack');
+            const el = document.createElement('div');
+            el.className = isError
+                ? 'bg-red-700 text-white px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300'
+                : 'bg-obsidian-950 text-ivory-100 border border-gold-500/45 px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300';
+            el.innerHTML = `<i data-lucide="${isError ? 'alert-triangle' : 'check-circle-2'}" class="w-4 h-4 text-gold-400 shrink-0"></i><span>${msg}</span>`;
+            stack.appendChild(el);
+            lucide.createIcons();
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(8px)';
+                setTimeout(() => el.remove(), 300);
+            }, 3200);
+        }
+
+        // Compress uploaded image files via canvas for fast rendering and export
+        function compressUploadedImage(file, maxEdge = 1700, quality = 0.85) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxEdge || h > maxEdge) {
+                            if (w >= h) {
+                                h = Math.round((h * maxEdge) / w);
+                                w = maxEdge;
+                            } else {
+                                w = Math.round((w * maxEdge) / h);
+                                h = maxEdge;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = reject;
+                    img.src = ev.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Sync form inputs with current state
+        function populateAdminInputs() {
+            document.getElementById('input-brand').value = portfolioState.brandName;
+            document.getElementById('input-tagline').value = portfolioState.tagline;
+            document.getElementById('input-whatsapp').value = portfolioState.whatsapp;
+            document.getElementById('input-client-message').value = portfolioState.clientMessage;
+        }
+
+        // Apply brand, contact, hero cover, and client message across UI
+        function renderBrandingAndHero() {
+            document.title = `${portfolioState.brandName} | ${portfolioState.tagline}`;
+            document.getElementById('header-brand').textContent = portfolioState.brandName;
+            document.getElementById('header-tagline').textContent = portfolioState.tagline;
+            document.getElementById('footer-brand').textContent = portfolioState.brandName;
+            document.getElementById('footer-tagline').textContent = portfolioState.tagline;
+            document.getElementById('display-client-message').textContent = portfolioState.clientMessage;
+            document.getElementById('hero-bg-img').src = portfolioState.heroCover;
+
+            const cleanWa = String(portfolioState.whatsapp || '').replace(/[^0-9]/g, '') || '201000000000';
+            document.getElementById('direct-whatsapp-btn').href = `https://wa.me/${cleanWa}`;
+        }
+
+        function syncBrandState() {
+            const brandVal = document.getElementById('input-brand').value.trim();
+            const taglineVal = document.getElementById('input-tagline').value.trim();
+            const waVal = document.getElementById('input-whatsapp').value.trim();
+            const msgVal = document.getElementById('input-client-message').value;
+
+            if (brandVal) portfolioState.brandName = brandVal;
+            if (taglineVal) portfolioState.tagline = taglineVal;
+            if (waVal) portfolioState.whatsapp = waVal;
+            portfolioState.clientMessage = msgVal;
+
+            renderBrandingAndHero();
+        }
+
+        async function handleHeroCoverUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            try {
+                showToast('جاري تحديث صورة الغلاف الرئيسية...');
+                const compressed = await compressUploadedImage(file, 2100, 0.88);
+                portfolioState.heroCover = compressed;
+                renderBrandingAndHero();
+                showToast('تم تحديث صورة الغلاف بنجاح');
+            } catch (e) {
+                showToast('تعذر تحميل صورة الغلاف', true);
+            }
+        }
+
+        function resetToDefaultDemos() {
+            portfolioState = getDefaultState();
+            populateAdminInputs();
+            renderAll();
+            showToast('تمت استعادة الإعدادات والسيشنات الافتراضية لـ REDA AHMED');
+        }
+
+        // Toggle Admin Drawer & Mobile Nav
+        function toggleAdminDrawer() {
+            document.getElementById('admin-drawer').classList.toggle('hidden');
+        }
+
+        function openAdminDrawerSmooth() {
+            const drawer = document.getElementById('admin-drawer');
+            drawer.classList.remove('hidden');
+            drawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleMobileNav() {
+            document.getElementById('mobile-nav').classList.toggle('hidden');
+        }
+
+        // Toggle Dark / Light Mode
+        function toggleTheme() {
+            const root = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const label = document.getElementById('theme-label');
+            const isDark = root.classList.toggle('dark');
+
+            if (isDark) {
+                icon.setAttribute('data-lucide', 'sun');
+                label.textContent = 'إضاءة نهارية';
+            } else {
+                icon.setAttribute('data-lucide', 'moon');
+                label.textContent = 'الوضع الداكن';
+            }
+            lucide.createIcons();
+        }
+
+        // Sessions Filtering & Rendering
+        function setSessionFilter(category) {
+            activeSessionFilter = category;
+            document.querySelectorAll('.session-filter-btn').forEach(btn => {
+                const match = btn.dataset.filter === category;
+                btn.classList.toggle('bg-gold-500', match);
+                btn.classList.toggle('text-obsidian-950', match);
+                btn.classList.toggle('font-bold', match);
+                btn.classList.toggle('text-stone-700', !match);
+                btn.classList.toggle('dark:text-stone-300', !match);
+                btn.classList.toggle('font-medium', !match);
+            });
+            renderSessionsGrid();
+        }
+
+        function renderSessionsGrid() {
+            const grid = document.getElementById('sessions-grid');
+            document.getElementById('sessions-total-count').textContent = portfolioState.sessions.length;
+
+            const visibleSessions = activeSessionFilter === 'all'
+                ? portfolioState.sessions
+                : portfolioState.sessions.filter(s => s.category === activeSessionFilter);
+
+            if (!visibleSessions.length) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-14 text-center rounded-2xl bg-stone-100 dark:bg-obsidian-850 border border-dashed border-stone-300 dark:border-white/15">
+                        <p class="text-sm text-stone-500 dark:text-stone-400 mb-3">لا توجد سيشنات في هذا التصنيف حالياً.</p>
+                        <button onclick="openAdminDrawerSmooth()" class="px-4 py-2 rounded-xl bg-gold-500 text-obsidian-950 font-bold text-xs cursor-pointer">
+                            + إنشاء سيشن جديد
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = visibleSessions.map(session => {
+                const coverIdx = Math.min(session.coverIndex || 0, Math.max(0, session.photos.length - 1));
+                const coverUrl = session.photos[coverIdx] || 'https://placehold.co/900x1100/151519/c9a86a?text=Session+Cover';
+                const catLabel = CATEGORY_LABELS[session.category] || 'سيشن خاص';
+
+                return `
+                    <article onclick="openSessionModal(${session.id})"
+                             class="group rounded-3xl overflow-hidden bg-white dark:bg-obsidian-850 border border-stone-200/80 dark:border-white/10 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col">
+                        <div class="relative aspect-[4/5] w-full overflow-hidden bg-obsidian-950">
+                            <img src="${coverUrl}"
+                                 onerror="this.src='https://placehold.co/900x1100/151519/c9a86a?text=REDA+AHMED+SESSION'"
+                                 alt="${session.title}"
+                                 loading="lazy"
+                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-950/80 via-transparent to-transparent"></div>
+
+                            <span class="absolute top-4 right-4 px-3 py-1 rounded-full bg-obsidian-950/75 backdrop-blur-md text-gold-300 border border-gold-500/35 text-xs font-semibold">
+                                ${catLabel}
+                            </span>
+
+                            <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-gold-500 text-obsidian-950 text-xs font-extrabold shadow">
+                                ${session.photos.length} صور
+                            </span>
+
+                            <div class="absolute bottom-4 right-4 left-4 flex items-center justify-between text-ivory-100">
+                                <span class="text-xs font-semibold text-gold-300 flex items-center gap-1.5">
+                                    <span>فتح السيشن بالكامل</span>
+                                    <i data-lucide="arrow-up-left" class="w-4 h-4"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-base sm:text-lg text-stone-900 dark:text-ivory-100 group-hover:text-gold-600 dark:group-hover:text-gold-400 transition mb-1.5">
+                                    ${session.title}
+                                </h3>
+                                <p class="text-xs text-stone-500 dark:text-stone-400 font-en">
+                                    ${session.note || 'Curated Session • High-End Color Grading'}
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Render Admin Sessions Management List & Append Select
+        function renderAdminSessionControls() {
+            const listEl = document.getElementById('admin-sessions-list');
+            const selectEl = document.getElementById('append-session-select');
+
+            if (!portfolioState.sessions.length) {
+                listEl.innerHTML = `<p class="text-xs text-stone-400">لا توجد سيشنات مضافة.</p>`;
+                selectEl.innerHTML = `<option value="">أنشئ سيشناً أولاً</option>`;
+                return;
+            }
+
+            selectEl.innerHTML = portfolioState.sessions
+                .map(s => `<option value="${s.id}">${s.title} (${s.photos.length} صور)</option>`)
+                .join('');
+
+            listEl.innerHTML = portfolioState.sessions.map(s => `
+                <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-obsidian-850 border border-white/10 text-xs">
+                    <div class="truncate">
+                        <div class="font-bold text-ivory-100 truncate">${s.title}</div>
+                        <div class="text-[11px] text-stone-400">${s.photos.length} صور • ${CATEGORY_LABELS[s.category] || ''}</div>
+                    </div>
+                    <button onclick="deleteSessionById(${s.id})" title="حذف السيشن" class="p-1.5 rounded-lg text-red-400 hover:bg-red-500/20 transition cursor-pointer shrink-0">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function updateNewSessionFileLabel(event) {
+            const count = event.target.files.length;
+            const lbl = document.getElementById('new-session-files-label');
+            lbl.textContent = count > 0 ? `تم اختيار ${count} صورة للسيشن` : 'اختر صور السيشن (أول صورة هي الغلاف)';
+        }
+
+        // Create a brand new session with multiple uploaded photos
+        async function createSessionFromInputs() {
+            const title = document.getElementById('new-session-title').value.trim();
+            const category = document.getElementById('new-session-category').value;
+            const note = document.getElementById('new-session-note').value.trim();
+            const fileInput = document.getElementById('new-session-files');
+            const files = Array.from(fileInput.files || []);
+
+            if (!title) {
+                showToast('يرجى كتابة اسم السيشن أولاً', true);
+                return;
+            }
+            if (!files.length) {
+                showToast('يرجى اختيار صورة واحدة على الأقل للسيشن', true);
+                return;
+            }
+
+            try {
+                showToast(`جاري معالجة ورفع ${files.length} صورة للسيشن...`);
+                const photos = [];
+                for (const file of files) {
+                    photos.push(await compressUploadedImage(file, 1650, 0.85));
+                }
+
+                portfolioState.sessions.unshift({
+                    id: Date.now(),
+                    title,
+                    category,
+                    note: note || `${CATEGORY_LABELS[category]} • REDA AHMED`,
+                    coverIndex: 0,
+                    photos
+                });
+
+                document.getElementById('new-session-title').value = '';
+                document.getElementById('new-session-note').value = '';
+                fileInput.value = '';
+                document.getElementById('new-session-files-label').textContent = 'اختر صور السيشن (أول صورة هي الغلاف)';
+
+                renderSessionsGrid();
+                renderAdminSessionControls();
+                showToast(`تم إنشاء السيشن "${title}" بنجاح`);
+            } catch (e) {
+                showToast('حدث خطأ أثناء رفع صور السيشن', true);
+            }
+        }
+
+        // Append photos to an existing session selected from admin dropdown
+        async function appendPhotosToSelectedSession(event) {
+            const sessionId = Number(document.getElementById('append-session-select').value);
+            const files = Array.from(event.target.files || []);
+            if (!sessionId || !files.length) return;
+
+            const targetSession = portfolioState.sessions.find(s => s.id === sessionId);
+            if (!targetSession) return;
+
+            try {
+                showToast(`جاري إضافة ${files.length} صورة إلى "${targetSession.title}"...`);
+                for (const file of files) {
+                    targetSession.photos.push(await compressUploadedImage(file, 1650, 0.85));
+                }
+                event.target.value = '';
+                renderSessionsGrid();
+                renderAdminSessionControls();
+                if (currentOpenSessionId === sessionId) {
+                    renderOpenSessionPhotos(targetSession);
+                }
+                showToast('تمت إضافة الصور للسيشن بنجاح');
+            } catch (e) {
+                showToast('تعذر إضافة الصور للسيشن', true);
+            }
+        }
+
+        // Append photos directly while inside an open session modal
+        async function appendPhotosToOpenSession(event) {
+            const files = Array.from(event.target.files || []);
+            if (!files.length || currentOpenSessionId === null) return;
+            const targetSession = portfolioState.sessions.find(s => s.id === currentOpenSessionId);
+            if (!targetSession) return;
+
+            try {
+                showToast(`جاري إضافة ${files.length} صورة للسيشن...`);
+                for (const file of files) {
+                    targetSession.photos.push(await compressUploadedImage(file, 1650, 0.85));
+                }
+                event.target.value = '';
+                renderSessionsGrid();
+                renderAdminSessionControls();
+                renderOpenSessionPhotos(targetSession);
+                showToast('تمت إضافة الصور الجديدة داخل السيشن');
+            } catch (e) {
+                showToast('تعذر إضافة الصور', true);
+            }
+        }
+
+        function deleteSessionById(id) {
+            portfolioState.sessions = portfolioState.sessions.filter(s => s.id !== id);
+            if (currentOpenSessionId === id) {
+                closeSessionModal();
+            }
+            renderSessionsGrid();
+            renderAdminSessionControls();
+            showToast('تم حذف السيشن');
+        }
+
+        // Open Full Session Modal
+        function openSessionModal(sessionId) {
+            const session = portfolioState.sessions.find(s => s.id === sessionId);
+            if (!session) return;
+
+            currentOpenSessionId = sessionId;
+            document.getElementById('modal-session-badge').textContent = CATEGORY_LABELS[session.category] || 'سيشن';
+            document.getElementById('modal-session-title').textContent = session.title;
+            renderOpenSessionPhotos(session);
+
+            document.getElementById('session-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function renderOpenSessionPhotos(session) {
+            document.getElementById('modal-session-subtitle').textContent =
+                `${session.photos.length} صورة في هذا السيشن — ${session.note || ''}`;
+
+            const masonry = document.getElementById('modal-session-masonry');
+            const coverIdx = Math.min(session.coverIndex || 0, Math.max(0, session.photos.length - 1));
+
+            masonry.innerHTML = session.photos.map((photoSrc, idx) => {
+                const isCover = idx === coverIdx;
+                return `
+                    <div class="session-masonry-item group relative rounded-2xl overflow-hidden bg-obsidian-850 border border-white/10 shadow-lg">
+                        <img src="${photoSrc}"
+                             onerror="this.src='https://placehold.co/900x1100/151519/c9a86a?text=Photo'"
+                             alt="${session.title} - ${idx + 1}"
+                             onclick="openPhotoLightbox(${session.id}, ${idx})"
+                             class="w-full h-auto block cursor-zoom-in hover:scale-[1.02] transition-transform duration-500">
+
+                        <div class="absolute top-3 right-3 flex items-center gap-1.5">
+                            ${isCover ? `<span class="px-2.5 py-1 rounded-lg bg-gold-500 text-obsidian-950 text-[11px] font-extrabold shadow">الغلاف</span>` : ''}
+                        </div>
+
+                        <div class="absolute top-3 left-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition">
+                            ${!isCover ? `
+                                <button onclick="setSessionCover(${session.id}, ${idx})" title="تعيين كغلاف للسيشن"
+                                        class="px-2.5 py-1 rounded-lg bg-obsidian-950/85 hover:bg-gold-500 hover:text-obsidian-950 text-gold-300 text-[11px] font-bold border border-white/15 transition cursor-pointer">
+                                    جعلها غلاف
+                                </button>
+                            ` : ''}
+                            <button onclick="removePhotoFromSession(${session.id}, ${idx})" title="حذف الصورة"
+                                    class="p-1.5 rounded-lg bg-obsidian-950/85 hover:bg-red-600 text-red-300 hover:text-white transition cursor-pointer">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function setSessionCover(sessionId, photoIdx) {
+            const session = portfolioState.sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            session.coverIndex = photoIdx;
+            renderSessionsGrid();
+            renderOpenSessionPhotos(session);
+            showToast('تم تحديث صورة غلاف السيشن');
+        }
+
+        function removePhotoFromSession(sessionId, photoIdx) {
+            const session = portfolioState.sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            if (session.photos.length <= 1) {
+                showToast('يجب أن يحتوي السيشن على صورة واحدة على الأقل، أو احذف السيشن بالكامل', true);
+                return;
+            }
+            session.photos.splice(photoIdx, 1);
+            if ((session.coverIndex || 0) >= session.photos.length) {
+                session.coverIndex = 0;
+            }
+            renderSessionsGrid();
+            renderAdminSessionControls();
+            renderOpenSessionPhotos(session);
+            showToast('تم حذف الصورة من السيشن');
+        }
+
+        function closeSessionModal() {
+            currentOpenSessionId = null;
+            document.getElementById('session-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Lightbox inside Session
+        function openPhotoLightbox(sessionId, index) {
+            currentOpenSessionId = sessionId;
+            currentLightboxPhotoIdx = index;
+            isLightboxZoomed = false;
+            syncLightboxView();
+            document.getElementById('lightbox-modal').classList.remove('hidden');
+        }
+
+        function syncLightboxView() {
+            const session = portfolioState.sessions.find(s => s.id === currentOpenSessionId);
+            if (!session || !session.photos.length) return;
+            currentLightboxPhotoIdx = (currentLightboxPhotoIdx + session.photos.length) % session.photos.length;
+
+            const img = document.getElementById('lightbox-photo');
+            img.src = session.photos[currentLightboxPhotoIdx];
+            img.style.transform = isLightboxZoomed ? 'scale(1.65)' : 'scale(1)';
+            img.className = isLightboxZoomed
+                ? 'max-h-[75vh] w-auto object-contain rounded-xl shadow-2xl border border-white/10 transition-transform duration-300 cursor-zoom-out'
+                : 'max-h-[75vh] w-auto object-contain rounded-xl shadow-2xl border border-white/10 transition-transform duration-300 cursor-zoom-in';
+
+            document.getElementById('zoom-label').textContent = isLightboxZoomed ? 'تصغير الصورة' : 'تكبير الصورة';
+            document.getElementById('zoom-icon').setAttribute('data-lucide', isLightboxZoomed ? 'zoom-out' : 'zoom-in');
+            document.getElementById('lightbox-counter').textContent = `${currentLightboxPhotoIdx + 1} / ${session.photos.length}`;
+            document.getElementById('lightbox-caption').textContent = `${session.title} — ${portfolioState.brandName}`;
+            lucide.createIcons();
+        }
+
+        function stepLightbox(delta) {
+            isLightboxZoomed = false;
+            currentLightboxPhotoIdx += delta;
+            syncLightboxView();
+        }
+
+        function toggleLightboxZoom() {
+            isLightboxZoomed = !isLightboxZoomed;
+            syncLightboxView();
+        }
+
+        function closeLightbox() {
+            isLightboxZoomed = false;
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        // Before / After Staging & Rendering
+        async function stageBaBefore(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            stagedBaBeforeUrl = await compressUploadedImage(file, 1600, 0.85);
+            const lbl = document.getElementById('ba-before-label');
+            lbl.textContent = '✓ RAW جاهزة';
+            lbl.classList.add('text-emerald-400', 'font-bold');
+        }
+
+        async function stageBaAfter(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            stagedBaAfterUrl = await compressUploadedImage(file, 1600, 0.85);
+            const lbl = document.getElementById('ba-after-label');
+            lbl.textContent = '✓ Final جاهزة';
+            lbl.classList.add('text-gold-400', 'font-bold');
+        }
+
+        function addBeforeAfterComparison() {
+            if (!stagedBaBeforeUrl || !stagedBaAfterUrl) {
+                showToast('يرجى اختيار صورتي قبل وبعد التعديل أولاً', true);
+                return;
+            }
+            const title = document.getElementById('ba-title').value.trim() || 'مقارنة معالجة وتلوين احترافية (Before & After)';
+            portfolioState.comparisons.unshift({
+                id: Date.now(),
+                title,
+                subtitle: 'اسحب المقبض لمقارنة التفاصيل الخام والنتيجة النهائية.',
+                beforeSrc: stagedBaBeforeUrl,
+                afterSrc: stagedBaAfterUrl,
+                isDemoRaw: false
+            });
+
+            stagedBaBeforeUrl = null;
+            stagedBaAfterUrl = null;
+            document.getElementById('ba-title').value = '';
+            document.getElementById('ba-before-label').textContent = 'صورة قبل (RAW)';
+            document.getElementById('ba-before-label').classList.remove('text-emerald-400', 'font-bold');
+            document.getElementById('ba-after-label').textContent = 'صورة بعد (Final)';
+            document.getElementById('ba-after-label').classList.remove('text-gold-400', 'font-bold');
+
+            renderBeforeAfterGrid();
+            showToast('تمت إضافة مقارنة قبل وبعد بنجاح');
+        }
+
+        function deleteComparisonById(id) {
+            portfolioState.comparisons = portfolioState.comparisons.filter(c => c.id !== id);
+            renderBeforeAfterGrid();
+            showToast('تم حذف المقارنة');
+        }
+
+        function renderBeforeAfterGrid() {
+            const grid = document.getElementById('ba-comparisons-grid');
+            if (!portfolioState.comparisons.length) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center rounded-2xl bg-white dark:bg-obsidian-900 border border-dashed border-stone-300 dark:border-white/15">
+                        <p class="text-sm text-stone-500 dark:text-stone-400 mb-3">لا توجد مقارنات قبل وبعد حالياً.</p>
+                        <button onclick="openAdminDrawerSmooth()" class="px-4 py-2 rounded-xl bg-gold-500 text-obsidian-950 font-bold text-xs cursor-pointer">
+                            + إضافة مقارنة قبل وبعد
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = portfolioState.comparisons.map(item => `
+                <div class="rounded-3xl overflow-hidden bg-white dark:bg-obsidian-900 border border-stone-200 dark:border-white/10 shadow-xl">
+                    <div class="ba-container aspect-[4/3] w-full relative">
+                        <img src="${item.beforeSrc}"
+                             alt="Before RAW"
+                             class="w-full h-full object-cover block ${item.isDemoRaw ? 'demo-raw-state' : ''}">
+                        <span class="absolute top-4 left-4 z-10 px-3 py-1 rounded-md bg-obsidian-950/80 backdrop-blur-md text-stone-200 font-en text-xs font-bold border border-white/15">
+                            BEFORE (RAW)
+                        </span>
+
+                        <div class="ba-after-wrapper" style="clip-path: inset(0 0 0 50%);">
+                            <img src="${item.afterSrc}"
+                                 alt="After Color Graded"
+                                 class="w-full h-full object-cover block">
+                            <span class="absolute top-4 right-4 z-10 px-3 py-1 rounded-md bg-gold-500 text-obsidian-950 font-en text-xs font-bold shadow">
+                                AFTER (GRADED)
+                            </span>
+                        </div>
+
+                        <div class="ba-handle" style="left: 50%;">
+                            <div class="ba-handle-knob">
+                                <i data-lucide="move-horizontal" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-base sm:text-lg text-stone-900 dark:text-ivory-100 mb-1">${item.title}</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 dark:text-stone-400">${item.subtitle}</p>
+                        </div>
+                        <button onclick="deleteComparisonById(${item.id})" title="حذف المقارنة" class="p-2 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-500/10 transition cursor-pointer shrink-0">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+            bindComparisonSliders();
+        }
+
+        // Enable mouse and touch dragging on all Before/After sliders
+        function bindComparisonSliders() {
+            document.querySelectorAll('.ba-container').forEach(container => {
+                const afterWrap = container.querySelector('.ba-after-wrapper');
+                const handle = container.querySelector('.ba-handle');
+                let dragging = false;
+
+                const updateAt = (clientX) => {
+                    const rect = container.getBoundingClientRect();
+                    let x = clientX - rect.left;
+                    x = Math.max(0, Math.min(x, rect.width));
+                    const pct = (x / rect.width) * 100;
+                    handle.style.left = `${pct}%`;
+                    afterWrap.style.clipPath = `inset(0 0 0 ${pct}%)`;
+                };
+
+                container.addEventListener('mousedown', (e) => {
+                    dragging = true;
+                    updateAt(e.clientX);
+                });
+                window.addEventListener('mousemove', (e) => {
+                    if (dragging) updateAt(e.clientX);
+                });
+                window.addEventListener('mouseup', () => {
+                    dragging = false;
+                });
+
+                container.addEventListener('touchstart', (e) => {
+                    dragging = true;
+                    updateAt(e.touches[0].clientX);
+                }, { passive: true });
+                container.addEventListener('touchmove', (e) => {
+                    if (dragging) updateAt(e.touches[0].clientX);
+                }, { passive: true });
+                container.addEventListener('touchend', () => {
+                    dragging = false;
+                });
+            });
+        }
+
+        // Prefill contact form from service cards
+        function prefillInquiry(serviceValue) {
+            const select = document.getElementById('inq-service');
+            for (const opt of select.options) {
+                if (opt.value === serviceValue) {
+                    select.value = serviceValue;
+                    break;
+                }
+            }
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Build formatted WhatsApp message and open
+        function sendSeriousInquiry(event) {
+            event.preventDefault();
+            const name = document.getElementById('inq-name').value.trim();
+            const service = document.getElementById('inq-service').value;
+            const date = document.getElementById('inq-date').value || 'غير محدد';
+            const details = document.getElementById('inq-details').value.trim();
+            const cleanWa = String(portfolioState.whatsapp || '').replace(/[^0-9]/g, '') || '201000000000';
+
+            const text =
+                `مرحباً *${portfolioState.brandName}*،%0A` +
+                `الطلب: *${service}*%0A` +
+                `• الاسم / الاستوديو: ${name}%0A` +
+                `• التاريخ المطلوب: ${date}%0A` +
+                `• التفاصيل: ${details}`;
+
+            window.open(`https://wa.me/${cleanWa}?text=${text}`, '_blank', 'noopener');
+            showToast('تم تجهيز رسالتك وفتح واتساب');
+        }
+
+        // Export a clean standalone index.html file containing current brand and sessions
+        function exportStandaloneHTML() {
+            try {
+                showToast('جاري تجهيز ملف index.html المستقل...');
+                const clone = document.documentElement.cloneNode(true);
+
+                // Remove studio admin toolbar and drawer for clean client sharing
+                const toolbar = clone.querySelector('#studio-toolbar');
+                if (toolbar) toolbar.remove();
+                const drawer = clone.querySelector('#admin-drawer');
+                if (drawer) drawer.remove();
+
+                // Align sticky header cleanly at top: 0
+                const header = clone.querySelector('#main-header');
+                if (header) {
+                    header.classList.remove('top-[49px]');
+                    header.classList.add('top-0');
+                }
+
+                // Embed current portfolioState into the exported document script
+                const serializedState = JSON.stringify(portfolioState).replace(/</g, '\\u003c');
+                const scripts = clone.querySelectorAll('script');
+                const mainScript = scripts[scripts.length - 1];
+                if (mainScript) {
+                    mainScript.textContent = mainScript.textContent.replace(
+                        'let portfolioState = getDefaultState();',
+                        `let portfolioState = ${serializedState};`
+                    );
+                }
+
+                const finalHtml = '<!DOCTYPE html>\n' + clone.outerHTML;
+                const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'index.html';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showToast('تم تصدير ملف index.html بنجاح وجاهز للمشاركة!');
+            } catch (e) {
+                showToast('تعذر تصدير الملف، حاول تقليل عدد الصور الكبيرة', true);
+            }
+        }
+
+        // Keyboard shortcuts for closing modals and stepping lightbox
+        document.addEventListener('keydown', (e) => {
+            const lightboxOpen = !document.getElementById('lightbox-modal').classList.contains('hidden');
+            const sessionOpen = !document.getElementById('session-modal').classList.contains('hidden');
+
+            if (lightboxOpen) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') stepLightbox(-1);
+                if (e.key === 'ArrowLeft') stepLightbox(1);
+            } else if (sessionOpen && e.key === 'Escape') {
+                closeSessionModal();
+            }
+        });
+
+        function renderAll() {
+            renderBrandingAndHero();
+            renderSessionsGrid();
+            renderAdminSessionControls();
+            renderBeforeAfterGrid();
+            lucide.createIcons();
+        }
+
+        window.onload = function () {
+            populateAdminInputs();
+            renderAll();
+        };
+    </script>
+</body>
+</html>
